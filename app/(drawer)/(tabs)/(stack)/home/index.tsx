@@ -1,60 +1,193 @@
-import CustomButton from '@/components/shared/CustomButton';
-import { DrawerActions } from '@react-navigation/native';
-import { Link, router, useNavigation } from 'expo-router';
-import { View, Text, SafeAreaView } from 'react-native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+import React from 'react';
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+
+  View,
+} from 'react-native';
+
 const HomeScreen = () => {
   const navigation = useNavigation();
 
   const onToggleDrawer = () => {
-    navigation.dispatch(DrawerActions.toggleDrawer);
+    navigation.dispatch(DrawerActions.toggleDrawer());
   };
 
+
   return (
-    <SafeAreaView>
-      <View className="px-10 mt-5">
-        <CustomButton
-          className="mb-2"
-          color="primary"
-          onPress={() => router.push('/products')}
-        >
-          Productos
-        </CustomButton>
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onToggleDrawer}>
+          <Image
+            source={require('@/assets/images/icon.png')} // ícono del menú hamburguesa
+            style={styles.menuIcon}
+          />
+        </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
+          <Text style={styles.title}>MI UPC</Text>
+        </View>
+        <TouchableOpacity>
+          <Image
+            source={require('@/assets/images/icon.png')} // ícono de notificación
+            style={styles.notificationIcon}
+          />
+        </TouchableOpacity>
+      </View>
 
-        <CustomButton
-          onPress={() => router.push('/profile')}
-          className="mb-2"
-          color="secondary"
-        >
-          Profile
-        </CustomButton>
+      {/* Bienvenida */}
+      <View style={styles.welcomeBox}>
+        <Image source={require('@/assets/images/icon.png')} style={styles.userIcon} />
+        <View>
+          <Text style={styles.welcomeText}>BIENVENID@</Text>
+          <Text style={styles.dateText}>Hoy es Domingo 11 de Mayo del 2025</Text>
+        </View>
+      </View>
 
-        <CustomButton
-          onPress={() => router.push('/settings')}
-          className="mb-2"
-          color="tertiary"
-        >
-          Ajustes
-        </CustomButton>
+      {/* Acciones principales */}
+      <View style={styles.grid}>
+        <TouchableOpacity style={styles.card}>
+          <Image source={require('@/assets/icon/icon_mi_upc.png')} style={styles.cardIcon} />
+          <Text style={styles.cardText}>ENCUENTRA LA UPC MÁS CERCANA</Text>
+        </TouchableOpacity>
 
-        <Link href="/products" asChild>
-          <CustomButton variant="text-only" className="mb-10" color="primary">
-            Productos
-          </CustomButton>
-        </Link>
+        <TouchableOpacity style={styles.card}>
+          <Image source={require('@/assets/img/fono.png')} style={styles.cardIcon} />
+          <Text style={styles.cardText}>BOTÓN DE EMERGENCIA</Text>
+        </TouchableOpacity>
 
-        <CustomButton onPress={onToggleDrawer}>Abrir menú</CustomButton>
+        <TouchableOpacity style={styles.card}>
+          <Image source={require('@/assets/images/icon.png')} style={styles.cardIcon} />
+          <Text style={styles.cardText}>SERVICIOS DE POLICÍA COMUNITARIA</Text>
+        </TouchableOpacity>
 
-        {/* <Link className="mb-5" href="/products">
-          Productos{' '}
-        </Link>
-        <Link className="mb-5" href="/profile">
-          Perfil{' '}
-        </Link>
-        <Link className="mb-5" href="/settings">
-          Ajustes{' '}
-        </Link> */}
+        <TouchableOpacity style={styles.card}>
+          <Image source={require('@/assets/images/icon.png')} style={styles.cardIcon} />
+          <Text style={styles.cardText}>MEDIDAS DE AUTOPROTECCIÓN</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Footer redes sociales */}
+      <View style={styles.footer}>
+        <View style={styles.socialRow}>
+          <Image source={require('@/assets/img/facebook.png')} style={styles.socialIcon} />
+          <Image source={require('@/assets/img/twitter.png')} style={styles.socialIcon} />
+          <Image source={require('@/assets/img/instagran.png')} style={styles.socialIcon} />
+          <Image source={require('@/assets/img/youtube.png')} style={styles.socialIcon} />
+        </View>
       </View>
     </SafeAreaView>
   );
 };
+
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    backgroundColor: '#0c2c5c',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  menuIcon: {
+    width: 25,
+    height: 25,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  logo: {
+    width: 30,
+    height: 30,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  notificationIcon: {
+    width: 25,
+    height: 25,
+  },
+  welcomeBox: {
+    margin: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e0e0e0',
+    padding: 15,
+    borderRadius: 20,
+  },
+  userIcon: {
+    width: 50,
+    height: 50,
+    marginRight: 15,
+  },
+  welcomeText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  dateText: {
+    color: '#0c2c5c',
+    marginTop: 5,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    rowGap: 20,
+    marginHorizontal: 10,
+    marginTop: 10,
+  },
+  card: {
+    width: 160,
+    height: 140,
+    backgroundColor: '#f2f2f2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    padding: 10,
+  },
+  cardIcon: {
+    width: 60,
+    height: 60,
+    marginBottom: 10,
+  },
+  cardText: {
+    textAlign: 'center',
+    fontWeight: '600',
+    color: '#0c2c5c',
+    fontSize: 13,
+  },
+  footer: {
+    marginTop: 'auto',
+    paddingVertical: 20,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+  },
+  socialRow: {
+    flexDirection: 'row',
+    gap: 30,
+  },
+  socialIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    padding: 8,
+  },
+});
