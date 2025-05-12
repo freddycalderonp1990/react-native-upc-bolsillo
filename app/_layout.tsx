@@ -1,5 +1,4 @@
 import CustomDrawer from '@/components/shared/CustomDrawer';
-import { Ionicons } from '@expo/vector-icons';
 import { Drawer } from 'expo-router/drawer';
 
 export default function DrawerLayout() {
@@ -16,43 +15,9 @@ export default function DrawerLayout() {
 
       }}
     >
-      
-      <Drawer.Screen
-        name="(tabs)"
-        options={{
-          drawerLabel: 'Inicio',
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="user/index"
-        options={{
-          drawerLabel: 'Registrar Usuario',
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="schedule/index"
-        options={{
-          drawerLabel: 'Horario',
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="share/index"
-        options={{
-          drawerLabel: 'Compartir App',
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="share-social-outline" size={size} color={color} />
-          ),
-        }}
-      />
+    
+
+
     </Drawer>
   );
 }

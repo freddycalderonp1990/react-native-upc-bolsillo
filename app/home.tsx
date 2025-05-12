@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
@@ -22,10 +23,10 @@ const HomeScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onToggleDrawer}>
-          <Image
-            source={require('@/assets/images/icon.png')} // ícono del menú hamburguesa
-            style={styles.menuIcon}
-          />
+   
+        <TouchableOpacity onPress={onToggleDrawer}>
+  <Ionicons name="menu" size={24} color="#fff" />
+</TouchableOpacity>
         </TouchableOpacity>
         <View style={styles.logoContainer}>
           <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
@@ -72,14 +73,22 @@ const HomeScreen = () => {
       </View>
 
       {/* Footer redes sociales */}
-      <View style={styles.footer}>
-        <View style={styles.socialRow}>
-          <Image source={require('@/assets/img/facebook.png')} style={styles.socialIcon} />
-          <Image source={require('@/assets/img/twitter.png')} style={styles.socialIcon} />
-          <Image source={require('@/assets/img/instagran.png')} style={styles.socialIcon} />
-          <Image source={require('@/assets/img/youtube.png')} style={styles.socialIcon} />
-        </View>
-      </View>
+<View style={styles.footer}>
+  <View style={styles.socialRow}>
+    <View style={styles.socialIconBox}>
+      <Image source={require('@/assets/img/facebook.png')} style={styles.socialIcon} />
+    </View>
+    <View style={styles.socialIconBox}>
+      <Image source={require('@/assets/img/twitter.png')} style={styles.socialIcon} />
+    </View>
+    <View style={styles.socialIconBox}>
+      <Image source={require('@/assets/img/instagran.png')} style={styles.socialIcon} />
+    </View>
+    <View style={styles.socialIconBox}>
+      <Image source={require('@/assets/img/youtube.png')} style={styles.socialIcon} />
+    </View>
+  </View>
+</View>
     </SafeAreaView>
   );
 };
@@ -173,20 +182,38 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   footer: {
-    marginTop: 'auto',
-    paddingVertical: 20,
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-  },
-  socialRow: {
-    flexDirection: 'row',
-    gap: 30,
-  },
-  socialIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    padding: 8,
-  },
+  marginTop: 'auto',
+  paddingVertical: 20,
+  alignItems: 'center',
+  backgroundColor: '#001f4b',
+  borderTopLeftRadius: 30,
+  borderTopRightRadius: 30,
+},
+socialRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-evenly',
+  width: '100%',
+  paddingHorizontal: 20,
+},
+socialIconBox: {
+  width: 60,
+  height: 60,
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  borderRadius: 20,
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: 'rgba(255, 255, 255, 0.3)',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
+},
+socialIcon: {
+  width: 30,
+  height: 30,
+  resizeMode: 'contain',
+},
+
 });
