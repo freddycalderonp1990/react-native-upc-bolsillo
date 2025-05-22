@@ -28,7 +28,7 @@ const HomeScreen = () => {
     navigation.dispatch(DrawerActions.toggleDrawer());
   };
 
-const abrirDialogo = () => router.push('/mapa');
+const abrirDialogo = () => router.push('/mapaMiUpc');
 
   const cerrarDialogo = () => setVisibleDialogo(false);
 

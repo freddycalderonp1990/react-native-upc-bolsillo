@@ -1,20 +1,18 @@
-import FooterRedes from '@/components/shared/FooterRedes';
+import FooterRedes from '@/presentation/components/shared/FooterRedes';
+import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image,
-  Linking,
-  Modal,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
 import HeaderMapa from './HeaderMapa';
+import UpcModal from './UpcModal';
 
 const MapaUbicacionActual = () => {
   const [upcSeleccionada, setUpcSeleccionada] = useState(null);
@@ -92,9 +90,28 @@ const MapaUbicacionActual = () => {
     }));
   };
 
-  const activarEnfoque = () => {
-    Alert.alert('Modo enfoque', 'Función de enfoque activada');
-  };
+const activarEnfoque = () => {
+if (upcs.length === 0 || !mapRef.current) {
+    Alert.alert('Sin UPCs', 'No hay UPCs disponibles para enfocar.');
+    return;
+  }
+
+const coordinates = upcs.map((upc) => ({
+    latitude: parseFloat(upc.latitudUpc),
+    longitude: parseFloat(upc.longitudUpc),
+  }));
+
+  mapRef.current.fitToCoordinates(coordinates, {
+    edgePadding: {
+      top: 100,
+      right: 100,
+      bottom: 100,
+      left: 100,
+    },
+    animated: true,
+  });
+};
+
 
   if (errorMsg) {
     return <Text style={styles.errorText}>{errorMsg}</Text>;
@@ -108,45 +125,47 @@ const MapaUbicacionActual = () => {
     <View style={styles.container}>
       <HeaderMapa />
 
-      <Pressable style={{ flex: 1 }} onPress={() => setUpcSeleccionada(null)}>
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          mapType="none"
-          region={region}
-          onRegionChangeComplete={setRegion}
-        >
-          <UrlTile
-            urlTemplate="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maximumZ={19}
-            tileSize={256}
-          />
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        mapType="none"
+        region={region}
+        onRegionChangeComplete={setRegion}
+      >
+        {/* OpenStreetMap Layer */}
+        <UrlTile
+          urlTemplate="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maximumZ={19}
+          tileSize={256}
+        />
 
+        {/* Marcador ubicación actual */}
+        <Marker
+          coordinate={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          }}
+          title="Tu ubicación"
+          description={`Lat: ${location.coords.latitude.toFixed(5)}, Lng: ${location.coords.longitude.toFixed(5)}`}
+          image={require('@/assets/img/marker_persona.png')}
+        />
+
+        {/* Marcadores UPCs */}
+        {upcs.map((upc) => (
           <Marker
+            key={upc.idGenUpc}
             coordinate={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
+              latitude: parseFloat(upc.latitudUpc),
+              longitude: parseFloat(upc.longitudUpc),
             }}
-            title="Tu ubicación"
-            description={`Lat: ${location.coords.latitude.toFixed(5)}, Lng: ${location.coords.longitude.toFixed(5)}`}
-            image={require('@/assets/img/marker_persona.png')}
+            title={upc.descripcionUpc}
+            onPress={() => setUpcSeleccionada(upc)}
+            image={require('@/assets/img/marker_upc.png')}
           />
+        ))}
+      </MapView>
 
-          {upcs.map((upc) => (
-            <Marker
-              key={upc.idGenUpc}
-              coordinate={{
-                latitude: parseFloat(upc.latitudUpc),
-                longitude: parseFloat(upc.longitudUpc),
-              }}
-              title={upc.descripcionUpc}
-              onPress={() => setUpcSeleccionada(upc)}
-              image={require('@/assets/img/marker_upc.png')}
-            />
-          ))}
-        </MapView>
-      </Pressable>
-
+      {/* Loading mientras se consulta el API */}
       {loadingUpcs && (
         <View style={styles.loadingUpcsBox}>
           <ActivityIndicator size="large" color="#0A84FF" />
@@ -154,34 +173,40 @@ const MapaUbicacionActual = () => {
         </View>
       )}
 
-      {/* Diálogo centrado */}
-      <Modal visible={!!upcSeleccionada} transparent animationType="fade">
-        <Pressable style={styles.modalOverlay} onPress={() => setUpcSeleccionada(null)}>
-          <View style={styles.upcDialog}>
-            <Image source={require('@/assets/img/area.png')} style={styles.upcLogo} />
-            <Text style={styles.upcTitle}>{upcSeleccionada?.descripcionUpc}</Text>
-            <Text style={styles.upcInfo}>📍 {upcSeleccionada?.dirUpc}</Text>
-            <Text style={styles.upcInfo}>📧 {upcSeleccionada?.mailUpc}</Text>
-            <Text style={styles.upcInfo}>📞 {upcSeleccionada?.fonoUpc}</Text>
-            <Text style={styles.upcInfo}>📏 {parseFloat(upcSeleccionada?.distance || 0).toFixed(2)} mts</Text>
+      {/* Botones flotantes */}
+      <View style={styles.floatingButtonContainer}>
+        <TouchableOpacity style={styles.floatingButton} onPress={centrarUbicacion}>
+          <Ionicons name="locate" size={24} color="#fff" />
+        </TouchableOpacity>
 
-            <View style={styles.upcActions}>
-              <TouchableOpacity style={styles.upcButton} onPress={() => Alert.alert('Ruta al UPC', 'Funcionalidad pendiente')}>
-                <Text style={styles.upcButtonText}>Ruta al UPC</Text>
-              </TouchableOpacity>
+        <TouchableOpacity style={styles.floatingButton} onPress={activarEnfoque}>
+          <Ionicons name="scan-circle" size={24} color="#fff" />
+        </TouchableOpacity>
 
-              <TouchableOpacity style={styles.upcButton} onPress={() => {
-                const telefono = upcSeleccionada.fonoUpc.replace(/\D/g, '');
-                Linking.openURL(`tel:${telefono}`);
-              }}>
-                <Text style={styles.upcButtonText}>Llamar UPC</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
+        <TouchableOpacity style={styles.floatingButton} onPress={zoomIn}>
+          <Ionicons name="add" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.floatingButton} onPress={zoomOut}>
+          <Ionicons name="remove" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
 
       <FooterRedes />
+
+
+
+
+
+      <UpcModal
+        visible={!!upcSeleccionada}
+        onClose={() => setUpcSeleccionada(null)}
+        upc={upcSeleccionada}
+      />
+
+
+
+
     </View>
   );
 };
@@ -244,51 +269,66 @@ const styles = StyleSheet.create({
     color: '#0c2c5c',
     fontWeight: '500',
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  upcDialog: {
+
+  upcCard: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#0c2c5c',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     padding: 20,
-    borderRadius: 20,
-    width: '85%',
+    paddingBottom: 30,
+    zIndex: 10,
+  },
+  upcHeader: {
     alignItems: 'center',
+    marginBottom: 5,
   },
   upcLogo: {
-    width: 100,
+    width: 120,
     height: 40,
     resizeMode: 'contain',
-    marginBottom: 10,
   },
   upcTitle: {
-    fontSize: 18,
     color: '#fff',
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
+    marginBottom: 10,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 10,
   },
   upcInfo: {
     color: '#fff',
     fontSize: 14,
     marginBottom: 5,
-    textAlign: 'center',
+  },
+  upcLabel: {
+    fontWeight: 'bold',
+    color: '#fff',
   },
   upcActions: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
     marginTop: 15,
-    gap: 20,
   },
   upcButton: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 8,
+    alignItems: 'center',
+  },
+  upcActionIcon: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+    marginBottom: 5,
   },
   upcButtonText: {
-    color: '#0c2c5c',
-    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 13,
   },
+
 });

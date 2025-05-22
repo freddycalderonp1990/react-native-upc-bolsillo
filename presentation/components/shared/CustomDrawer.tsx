@@ -23,7 +23,7 @@ const CustomDrawer = (props: any) => {
 
 
         <Image
-          source={require('../../assets/icon/ic_person.png')}
+          source={require('../../../assets/icon/ic_person.png')}
           style={styles.avatar}
         />
         <Text style={styles.username}>Usuario</Text>
