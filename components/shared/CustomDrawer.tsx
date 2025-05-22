@@ -1,7 +1,6 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
 import {
   Image,
   Linking,
@@ -22,8 +21,9 @@ const CustomDrawer = (props: any) => {
           <Ionicons name="power" size={24} color="red" />
         </TouchableOpacity>
 
+
         <Image
-          source={require('../../assets/images/icon.png')}
+          source={require('../../assets/icon/ic_person.png')}
           style={styles.avatar}
         />
         <Text style={styles.username}>Usuario</Text>

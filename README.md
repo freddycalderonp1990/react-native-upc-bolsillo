@@ -19,6 +19,35 @@ https://www.nativewind.dev/docs/getting-started/installation
    npx expo start
    ```
 
+
+## GPS
+
+1. npx expo install react-native-maps expo-location
+2. Permisos para ubicación
+
+ Para Android (en app.json):
+
+{
+  "expo": {
+    "android": {
+      "permissions": ["ACCESS_FINE_LOCATION"]
+    }
+  }
+}
+
+🍏 Para iOS (también en app.json):
+
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Esta app necesita acceso a tu ubicación para mostrar tu posición en el mapa."
+      }
+    }
+  }
+}
+
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
