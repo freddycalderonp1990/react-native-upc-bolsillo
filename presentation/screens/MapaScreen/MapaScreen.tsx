@@ -9,13 +9,16 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import MapView, { Marker, UrlTile } from 'react-native-maps';
+import MapView, { Marker, Polyline, UrlTile } from 'react-native-maps';
 
+
+import { createPolylines } from '@/core/utils/mapUtils';
 import { UpcRepositoryImpl } from '@/data/repository/UpcRepositoryImpl';
 import FooterRedes from '@/presentation/components/shared/FooterRedes';
 import { Upc } from '../../../domain/entities/Upc';
 import { GetUpcsCercanas } from '../../../domain/usecases/GetUpcsCercanas';
 import HeaderMapa from './HeaderMapa';
+import { styles } from './MapaScreen.styles';
 import UpcModal from './UpcModal';
 
 
@@ -24,9 +27,14 @@ const MapaScreen = () => {
   const [region, setRegion] = useState(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [upcs, setUpcs] = useState<Upc[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedUpc, setSelectedUpc] = useState<Upc | null>(null);
   const mapRef = useRef<MapView>(null);
+  const [markersRendered, setMarkersRendered] = useState(false);
+  const [polylineCoords, setPolylineCoords] = useState<{ latitude: number; longitude: number }[]>([]);
+  const [loadingRuta, setLoadingRuta] = useState(false);
+
+
 
   useEffect(() => {
     (async () => {
@@ -61,6 +69,7 @@ const MapaScreen = () => {
     })();
   }, []);
 
+
   const centrarUbicacion = () => {
     if (location) {
       setRegion({
@@ -72,11 +81,70 @@ const MapaScreen = () => {
     }
   };
 
+  const manejarRuta = async (upc: Upc) => {
+    if (!location) return;
+
+    setLoadingRuta(true);
+
+    try {
+      const coords = await createPolylines(
+        location.coords.latitude,
+        location.coords.longitude,
+        parseFloat(upc.latitudUpc),
+        parseFloat(upc.longitudUpc)
+      );
+
+      setPolylineCoords(coords);
+      setSelectedUpc(null);
+
+      // Centrar mapa en toda la ruta
+      if (mapRef.current && coords.length > 0) {
+        mapRef.current.fitToCoordinates(coords, {
+          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+          animated: true,
+        });
+      }
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo generar la ruta');
+    } finally {
+      setLoadingRuta(false);
+    }
+  };
+
+  const zoomIn = () => {
+    setRegion((prev) => ({
+      ...prev,
+      latitudeDelta: prev.latitudeDelta / 2,
+      longitudeDelta: prev.longitudeDelta / 2,
+    }));
+  };
+
+  const zoomOut = () => {
+    setRegion((prev) => ({
+      ...prev,
+      latitudeDelta: prev.latitudeDelta * 2,
+      longitudeDelta: prev.longitudeDelta * 2,
+    }));
+  };
+
   const activarEnfoque = () => {
-    if (upcs.length === 0 || !mapRef.current) return;
-    const coords = upcs.map((u) => ({ latitude: parseFloat(u.latitudUpc), longitude: parseFloat(u.longitudUpc) }));
-    mapRef.current.fitToCoordinates(coords, {
-      edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+    if (upcs.length === 0 || !mapRef.current) {
+      Alert.alert('Sin UPCs', 'No hay UPCs disponibles para enfocar.');
+      return;
+    }
+
+    const coordinates = upcs.map((upc) => ({
+      latitude: parseFloat(upc.latitudUpc),
+      longitude: parseFloat(upc.longitudUpc),
+    }));
+
+    mapRef.current.fitToCoordinates(coordinates, {
+      edgePadding: {
+        top: 100,
+        right: 100,
+        bottom: 100,
+        left: 100,
+      },
       animated: true,
     });
   };
@@ -93,6 +161,10 @@ const MapaScreen = () => {
         style={{ flex: 1 }}
         region={region}
         onRegionChangeComplete={setRegion}
+        onMapReady={() => {
+          // Esperamos unos milisegundos a que los markers se dibujen visualmente
+          setTimeout(() => setMarkersRendered(true), 500);
+        }}
         mapType="none"
       >
         <UrlTile
@@ -119,16 +191,49 @@ const MapaScreen = () => {
             onPress={() => setSelectedUpc(upc)}
           />
         ))}
+
+        {polylineCoords.length > 0 && (
+          <Polyline
+            coordinates={polylineCoords}
+            strokeColor="#001f4b"
+            strokeWidth={4}
+          />
+        )}
       </MapView>
 
-      <View style={{ position: 'absolute', left: 20, bottom: 140 }}>
-        <TouchableOpacity onPress={centrarUbicacion}><Ionicons name="locate" size={30} color="#0c2c5c" /></TouchableOpacity>
-        <TouchableOpacity onPress={activarEnfoque}><Ionicons name="scan-circle" size={30} color="#0c2c5c" /></TouchableOpacity>
+
+
+      {loading || !markersRendered || loadingRuta ? (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#fff" />
+          <Text style={styles.loadingText}>Cargando UPCs cercanas...</Text>
+        </View>
+      ) : null}
+      <UpcModal
+        visible={!!selectedUpc}
+        upc={selectedUpc}
+        onClose={() => setSelectedUpc(null)}
+        onRutaPress={manejarRuta}
+      />
+
+      {/* Botones flotantes */}
+      <View style={styles.floatingButtonContainer}>
+        <TouchableOpacity style={styles.floatingButton} onPress={centrarUbicacion}>
+          <Ionicons name="locate" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.floatingButton} onPress={activarEnfoque}>
+          <Ionicons name="scan-circle" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.floatingButton} onPress={zoomIn}>
+          <Ionicons name="add" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.floatingButton} onPress={zoomOut}>
+          <Ionicons name="remove" size={24} color="#fff" />
+        </TouchableOpacity>
       </View>
-
-      {loading && <ActivityIndicator style={{ position: 'absolute', top: 100, alignSelf: 'center' }} size="large" />}
-
-      <UpcModal visible={!!selectedUpc} upc={selectedUpc} onClose={() => setSelectedUpc(null)} />
 
       <FooterRedes />
     </View>

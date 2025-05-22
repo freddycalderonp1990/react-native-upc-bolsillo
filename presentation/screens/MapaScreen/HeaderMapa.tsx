@@ -26,8 +26,8 @@ export default HeaderMapa;
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: 10, // para status bar
-    paddingBottom: 20,
+   paddingTop: 80,
+    paddingBottom:20,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,

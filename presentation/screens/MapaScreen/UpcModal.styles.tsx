@@ -48,4 +48,26 @@ export const styles = StyleSheet.create({
     color: '#0c2c5c',
     fontWeight: 'bold',
   },
+  upcTitleBox: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#f2f2f2',
+  paddingHorizontal: 5,
+  paddingVertical: 5,
+  borderRadius: 15,
+  marginTop: 2,
+  marginBottom: 10,
+  alignSelf: 'center',
+  width: '100%',
+},
+upcIcon: {
+  width: 40,
+  height: 40,
+  marginRight: 10,
+},
+upcTextLogo: {
+  height: 40,
+  width: 120,
+},
 });
