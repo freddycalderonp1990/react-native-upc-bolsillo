@@ -34,27 +34,9 @@ export const styles = StyleSheet.create({
     width: 25,
     height: 25,
   },
-  welcomeBox: {
-    margin: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#e0e0e0',
-    padding: 15,
-    borderRadius: 20,
-  },
-  userIcon: {
-    width: 50,
-    height: 50,
-    marginRight: 15,
-  },
-  welcomeText: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  dateText: {
-    color: '#0c2c5c',
-    marginTop: 5,
-  },
+
+
+
 grid: {
   flexDirection: 'row',
   flexWrap: 'wrap',
@@ -151,10 +133,6 @@ card: {
     color: '#fff',
     fontWeight: 'bold',
   },
-  background: {
-  flex: 1,
-  resizeMode: 'cover',
-  justifyContent: 'center',
-},
+
 
 });

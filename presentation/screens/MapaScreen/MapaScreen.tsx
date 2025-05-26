@@ -17,7 +17,8 @@ import { UpcRepositoryImpl } from '@/data/repository/UpcRepositoryImpl';
 import FooterRedes from '@/presentation/components/shared/FooterRedes';
 import { Upc } from '../../../domain/entities/Upc';
 import { GetUpcsCercanas } from '../../../domain/usecases/GetUpcsCercanas';
-import HeaderMapa from './HeaderMapa';
+ 
+import HeaderPage from '@/presentation/components/shared/HeaderPage';
 import { styles } from './MapaScreen.styles';
 import UpcModal from './UpcModal';
 
@@ -154,8 +155,7 @@ const MapaScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <HeaderMapa />
-
+   <HeaderPage titulo="Encuentra la Upc más cercana" />
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}

@@ -4,7 +4,11 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-const HeaderMapa = () => {
+interface HeaderPageProps {
+  titulo?: string;
+}
+
+const HeaderPage: React.FC<HeaderPageProps> = ({ titulo = 'Título' }) => {
   const router = useRouter();
 
   return (
@@ -17,17 +21,17 @@ const HeaderMapa = () => {
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="#fff" />
       </TouchableOpacity>
-      <Text style={styles.headerTitle}>Encuentra la Upc más cercana</Text>
+      <Text style={styles.headerTitle}>{titulo}</Text>
     </LinearGradient>
   );
 };
 
-export default HeaderMapa;
+export default HeaderPage;
 
 const styles = StyleSheet.create({
   headerContainer: {
-   paddingTop: 80,
-    paddingBottom:20,
+    paddingTop: 80,
+    paddingBottom: 20,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
@@ -46,6 +50,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     flex: 1,
     textAlign: 'center',
-    marginRight: 30, // compensar ícono izquierdo
+    marginRight: 30, // Compensar espacio del icono izquierdo
   },
 });

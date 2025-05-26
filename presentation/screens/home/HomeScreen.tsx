@@ -7,8 +7,9 @@ import { ImageBackground } from 'react-native';
 
 
 
+import DesingBanner from '@/presentation/components/shared/DesingBanner';
+import { GlobalStyles } from '@/presentation/theme/globalStyles';
 import {
-  Alert,
   Image,
   Modal,
   Text,
@@ -16,6 +17,7 @@ import {
   View
 } from 'react-native';
 import { styles } from './HomeScreen.styles';
+
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -27,42 +29,26 @@ const HomeScreen = () => {
     navigation.dispatch(DrawerActions.toggleDrawer());
   };
 
-const abrirDialogo = () => router.push('/mapaMiUpc');
+const goToPageMapaUpc = () => router.push('/mapaMiUpc');
 
-const obtenerFechaHoy = (): string => {
-  const fecha = new Date();
 
-  const opciones: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  };
+const goToPageMedidasProteccion= () => router.push('/medidasProteccion');
 
-  const fechaFormateada = new Intl.DateTimeFormat('es-EC', opciones).format(fecha);
-  
-  // Capitalizar la primera letra
-  return fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
-};
+const goToPageServiciosComunitario= () => router.push('/serviciosComunitario');
+
+const goToPageBotonEmergencia= () => router.push('/botonEmergencia');
+
 
   const cerrarDialogo = () => setVisibleDialogo(false);
 
-  const botonEmergencia = () => {
-    Alert.alert('Emergencia', 'Botón de emergencia activado');
-  };
 
-  const verServiciosPolicia = () => {
-    Alert.alert('Servicios', 'Servicios de policía comunitaria');
-  };
 
-  const verMedidasProteccion = () => {
-    Alert.alert('Seguridad', 'Medidas de autoprotección');
-  };
+
 
   return (
   <ImageBackground
   source={require('@/assets/img/fondo1.png')}
-  style={styles.background}
+  style={GlobalStyles.background}
   resizeMode="cover"
 >
       {/* Header */}
@@ -81,33 +67,28 @@ const obtenerFechaHoy = (): string => {
         </TouchableOpacity>
       </View>
 
-      {/* Bienvenida */}
-      <View style={styles.welcomeBox}>
-        <Image source={require('@/assets/img/upc.jpeg')} style={styles.userIcon} />
-        <View>
-          <Text style={styles.welcomeText}>BIENVENID@</Text>
-  <Text style={styles.dateText}>Hoy es {obtenerFechaHoy()}</Text>
-        </View>
-      </View>
+
+        <DesingBanner   titulo="BIENVENID@"
+  iconSource={require('@/assets/img/upc.jpeg')} />
 
       {/* Acciones principales */}
       <View style={styles.grid}>
-        <TouchableOpacity style={styles.card} onPress={abrirDialogo}>
+        <TouchableOpacity style={styles.card} onPress={goToPageMapaUpc}>
           <Image source={require('@/assets/img/upc.jpeg')} style={styles.cardIcon} />
           <Text style={styles.cardText}>ENCUENTRA LA UPC MÁS CERCANA</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card} onPress={botonEmergencia}>
+        <TouchableOpacity style={styles.card} onPress={goToPageBotonEmergencia}>
           <Image source={require('@/assets/img/boton_emergencia.jpeg')} style={styles.cardIcon} />
           <Text style={styles.cardText}>BOTÓN DE EMERGENCIA</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card} onPress={verServiciosPolicia}>
+        <TouchableOpacity style={styles.card} onPress={goToPageServiciosComunitario}>
           <Image source={require('@/assets/img/servicios_comunitario.jpeg')} style={styles.cardIcon} />
           <Text style={styles.cardText}>SERVICIOS DE POLICÍA COMUNITARIA</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card} onPress={verMedidasProteccion}>
+        <TouchableOpacity style={styles.card} onPress={goToPageMedidasProteccion}>
           <Image source={require('@/assets/img/mediadas_seguridad.jpeg')} style={styles.cardIcon} />
           <Text style={styles.cardText}>MEDIDAS DE AUTOPROTECCIÓN</Text>
         </TouchableOpacity>
