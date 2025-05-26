@@ -1,28 +1,28 @@
 import { ServiciosRepositoryImpl } from '@/data/repository/ServiciosRepositoryImpl';
-import { ServiciosDetalleEntity } from '@/domain/entities/ServiciosDetalleEntity';
 import { ServiciosEntity } from '@/domain/entities/ServiciosEntity';
 import { GetServiciosComunitario } from '@/domain/usecases/GetServiciosComunitario';
-import { GetServiciosDetalle } from '@/domain/usecases/GetServiciosDetalle';
 import DesingBanner from '@/presentation/components/shared/DesingBanner';
 import FooterRedes from '@/presentation/components/shared/FooterRedes';
 import HeaderPage from '@/presentation/components/shared/HeaderPage';
 import ModalServicios from '@/presentation/components/shared/ModalServicios';
 import { GlobalStyles } from '@/presentation/theme/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { ImagePickerResult } from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
-
-import RNPickerSelect from 'react-native-picker-select';
-
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ImageBackground,
   Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 import { styles } from './BotonEmergencia.styles';
+import ModalCamara from './ModalCamara';
 
 const BotonEmergenciaScreen = () => {
   const [loading, setLoading] = useState(true);
@@ -32,15 +32,15 @@ const BotonEmergenciaScreen = () => {
   const [tips, setTips] = useState<string[]>([]);
   const [loadingModal, setLoadingModal] = useState(false);
 
-  // Dentro de tu componente:
   const [eventoSeleccionado, setEventoSeleccionado] = useState<string | null>(null);
   const [observacion, setObservacion] = useState('');
+  const [imagenBase64, setImagenBase64] = useState<string | null>(null);
+  const [modalCamaraVisible, setModalCamaraVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
       const repo = new ServiciosRepositoryImpl();
       const usecase = new GetServiciosComunitario(repo);
-
       try {
         setLoading(true);
         const data = await usecase.execute();
@@ -53,20 +53,37 @@ const BotonEmergenciaScreen = () => {
     })();
   }, []);
 
-  const handleOpenModal = async (item: ServiciosEntity) => {
-    const repo = new ServiciosRepositoryImpl();
-    const usecaseDetalle = new GetServiciosDetalle(repo);
-    try {
-      setLoadingModal(true);
-      const detalles = await usecaseDetalle.execute(item.idUpcServicio);
-      const tipsResult = detalles.map((d: ServiciosDetalleEntity) => d.descripcion);
-      setTips(tipsResult);
-      setSelectedItem(item);
-      setModalVisible(true);
-    } catch (e) {
-      Alert.alert('Error', 'No se pudo cargar los detalles del servicio');
-    } finally {
-      setLoadingModal(false);
+  const abrirGaleria = async () => {
+    const permiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permiso.granted) {
+      Alert.alert('Permiso denegado', 'Se requiere acceso a la galería');
+      return;
+    }
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      base64: true,
+      quality: 0.7,
+    });
+    manejarResultadoImagen(resultado);
+  };
+
+  const abrirCamara = async () => {
+    const permiso = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permiso.granted) {
+      Alert.alert('Permiso denegado', 'Se requiere acceso a la cámara');
+      return;
+    }
+    const resultado = await ImagePicker.launchCameraAsync({
+      base64: true,
+      quality: 0.7,
+    });
+    manejarResultadoImagen(resultado);
+  };
+
+  const manejarResultadoImagen = (resultado: ImagePickerResult) => {
+    if (!resultado.canceled && resultado.assets && resultado.assets.length > 0) {
+      const base64 = resultado.assets[0].base64;
+      setImagenBase64(base64 ?? null);
+      setModalCamaraVisible(false);
     }
   };
 
@@ -115,36 +132,58 @@ const BotonEmergenciaScreen = () => {
                 }}
                 Icon={() => <Ionicons name="chevron-down" size={20} color="#0c2c5c" />}
               />
-
-
             </View>
-
 
             {/* Observación */}
             <Text style={styles.label}>Observación</Text>
             <View style={styles.inputBox}>
-  <Ionicons name="pencil-outline" size={22} color="#001f4b" style={styles.inputIcon} />
-  
-  <TextInput
-    style={styles.textInput}
-    placeholder="Escribe tu mensaje aquí..."
-    placeholderTextColor="#999"
-    value={observacion}
-    onChangeText={(text) => setObservacion(text)}
-    maxLength={100}
-    multiline
-  />
-
-  <Text style={styles.charCounter}>{observacion.length}/100</Text>
-</View>
-
+              <Ionicons name="pencil-outline" size={22} color="#001f4b" style={styles.inputIcon} />
+              <TextInput
+                style={styles.textInput}
+                placeholder="Escribe tu mensaje aquí..."
+                placeholderTextColor="#999"
+                value={observacion}
+                onChangeText={(text) => setObservacion(text)}
+                maxLength={100}
+                multiline
+              />
+              <Text style={styles.charCounter}>{observacion.length}/100</Text>
+            </View>
 
             {/* Sección Imagen */}
-            <Text style={styles.label}>Seleccione una Imagen</Text>
-            <TouchableOpacity style={styles.imageButton}>
-              <Ionicons name="camera-outline" size={22} color="#001f4b" style={styles.inputIcon} />
-              <Text style={styles.imageText}>Registre una Imagen</Text>
-            </TouchableOpacity>
+<Text style={styles.label}>
+  {imagenBase64 ? 'Imagen Seleccionada' : 'Seleccione una Imagen'}
+</Text>
+
+<TouchableOpacity
+  style={styles.imageButton}
+  onPress={() => setModalCamaraVisible(true)}
+>
+  <Ionicons name="camera-outline" size={22} color="#001f4b" style={styles.inputIcon} />
+  <Text style={styles.imageText}>
+    {imagenBase64 ? 'Cambiar Imagen' : 'Registre una Imagen'}
+  </Text>
+</TouchableOpacity>
+
+{imagenBase64 && (
+  <View style={styles.previewContainer}>
+    <Text style={styles.previewLabel}>Previsualización:</Text>
+    <View style={styles.imagePreviewBox}>
+      <Image
+        source={{ uri: `data:image/jpeg;base64,${imagenBase64}` }}
+        style={styles.previewImage}
+      />
+    </View>
+  </View>
+)}
+
+            {/* Modal cámara/galería */}
+            <ModalCamara
+              visible={modalCamaraVisible}
+              onClose={() => setModalCamaraVisible(false)}
+              onGaleria={abrirGaleria}
+              onCamara={abrirCamara}
+            />
           </View>
         )}
 
@@ -154,6 +193,7 @@ const BotonEmergenciaScreen = () => {
         {/* Footer al final */}
         <FooterRedes />
 
+        {/* Cargando detalles */}
         {loadingModal && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color="#fff" />
@@ -161,6 +201,7 @@ const BotonEmergenciaScreen = () => {
           </View>
         )}
 
+        {/* Modal de información */}
         {selectedItem && !loadingModal && (
           <ModalServicios
             visible={modalVisible}

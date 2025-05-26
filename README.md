@@ -47,6 +47,10 @@ https://www.nativewind.dev/docs/getting-started/installation
   }
 }
 
+## CAMRA Y GALERIA
+npx expo install expo-image-picker
+
+
 
 In the output, you'll find options to open the app in a
 

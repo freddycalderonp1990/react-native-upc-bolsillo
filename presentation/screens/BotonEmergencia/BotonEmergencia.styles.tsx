@@ -194,4 +194,31 @@ charCounter: {
 
 
 
+
+
+
+previewContainer: {
+  marginTop: 10,
+  alignItems: 'center',
+},
+previewLabel: {
+  fontSize: 14,
+  color: '#0c2c5c',
+  fontWeight: 'bold',
+  marginBottom: 5,
+},
+imagePreviewBox: {
+  borderRadius: 10,
+  overflow: 'hidden',
+  borderWidth: 1,
+  borderColor: '#ccc',
+},
+previewImage: {
+  width: 150,
+  height: 150,
+  resizeMode: 'cover',
+},
+
+
+
 });
