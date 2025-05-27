@@ -220,5 +220,28 @@ previewImage: {
 },
 
 
+  button: {
+    flexDirection: 'row',
+    backgroundColor: '#0b65d9',
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    marginTop:10
+  },
+  textBtn: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+
+
 
 });

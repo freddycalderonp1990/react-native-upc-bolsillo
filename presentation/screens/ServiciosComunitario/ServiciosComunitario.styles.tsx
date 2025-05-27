@@ -16,11 +16,10 @@ export const styles = StyleSheet.create({
 itemContainer: {
   flexDirection: 'row',
   alignItems: 'center',
-  backgroundColor: 'transparent',  // semitransparente
+  backgroundColor: 'transparent', 
   borderRadius: 12,
   padding: 2,
-  elevation: 2,
-  gap: 20,
+
 },
   itemIcon: {
     width: 70,

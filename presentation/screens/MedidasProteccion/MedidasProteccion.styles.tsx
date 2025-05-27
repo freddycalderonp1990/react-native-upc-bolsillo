@@ -18,8 +18,6 @@ itemContainer: {
   alignItems: 'center',
   backgroundColor: 'transparent',  // semitransparente
   borderRadius: 12,
-  padding: 2,
-  elevation: 2,
   gap: 20,
 },
   itemIcon: {

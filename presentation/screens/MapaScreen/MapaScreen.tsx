@@ -165,10 +165,10 @@ const MapaScreen = () => {
           // Esperamos unos milisegundos a que los markers se dibujen visualmente
           setTimeout(() => setMarkersRendered(true), 500);
         }}
-        mapType="none"
+     mapType="standard" 
       >
         <UrlTile
-          urlTemplate="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maximumZ={19}
           tileSize={256}
         />
